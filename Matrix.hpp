@@ -57,50 +57,20 @@ public:
 			throw std::exception("Умножение невозможно");
 		}
 		Matrix<Type, Coll, Row>res;
-		if (lso.columns() == rso.rows())
-		{
-			for (unsigned long long i = 0; i < lso.rows(); ++i) {
-				for (unsigned long long j = 0; j < rso.columns(); ++j) {
-					for (unsigned long long k = 0; k < lso.columns(); ++k) {
-						res(i, j) += lso(i, k) * rso(k, j);
-					}
+		
+		for (unsigned long long i = 0; i < lso.rows(); ++i) {
+			for (unsigned long long j = 0; j < rso.columns(); ++j) {
+				for (unsigned long long k = 0; k < lso.columns(); ++k) {
+					res(i, j) += lso(i, k) * rso(k, j);
 				}
 			}
-
-			return res;
 		}
-		else
-		{
-			Matrix<Type, Row, Coll> reverseMatrix{};
-			for (unsigned long long  i = 0; i < rso.rows(); i++)
-			{
-				for (unsigned long long  j = 0; j < rso.columns(); j++)
-				{
-					reverseMatrix[j][i] = rso[i][j];
-				}
-			}
-			for (unsigned long long  i = 0; i < lso.rows(); i++)
-			{
-				for (unsigned long long  j = 0; j < reverseMatrix.columns(); j++)
-				{
-					for (unsigned long long  k = 0; k < lso.columns(); k++)
-					{
-						res[i][j] += lso[i][k] * reverseMatrix[k][j];
-					}
-				}
-			}
-			return res;
-		}
-	}
-	template<typename Type, unsigned long long Coll, unsigned long long Row>
 
-	friend const Matrix operator/(const Matrix<Type, Coll, Row>& lso, const Matrix<Type, Coll, Row>& rso) {
-		// Вычисляем обратную матрицу для rso
-		Matrix<Type, Coll, Row> inverse_rso = rso.inverse();
-
-		// Умножаем lso на обратную матрицу rso
-		return lso * inverse_rso;
+		return res;
+		
+		
 	}
+
 	
 
 	template<unsigned long long Coll1, unsigned long long Row1>
@@ -129,30 +99,7 @@ public:
 	}
 
 
-	Matrix<Type, Coll, Row> inverse() const
-	{
-		if (Coll != Row) {
-			throw std::invalid_argument("Обратная матрица существует только для квадратных матриц");
-		}
 
-		if (Coll == 2 && Row == 2) {
-			Type det = data_[0][0] * data_[1][1] - data_[0][1] * data_[1][0];
-			if (det == 0) {
-				throw std::invalid_argument("Матрица вырождена, обратной матрицы не существует");
-			}
-
-			Matrix<Type, Coll, Row> inv;
-			inv(0, 0) = data_[1][1] / det;
-			inv(0, 1) = -data_[0][1] / det;
-			inv(1, 0) = -data_[1][0] / det;
-			inv(1, 1) = data_[0][0] / det;
-
-			return inv;
-		}
-		else {
-			throw std::invalid_argument("Обратная матрица для матриц большего размера не реализована");
-		}
-	}
 	template<unsigned long long Coll1, unsigned long long Row1>
 	friend bool operator==(const Matrix<Type, Coll, Row>& lso, const Matrix<Type, Coll1, Row1>& rso) {
 		if (lso.columns() == rso.columns() && lso.rows() == rso.rows()) {
@@ -169,7 +116,7 @@ public:
 	}
 	template<unsigned long long Coll1, unsigned long long Row1>
 	friend bool operator!=(const Matrix<Type, Coll, Row>& lso, const Matrix<Type, Coll1, Row1>& rso) {
-		return !(a == b);
+		return !(lso == rso);
 	}
 	const Type& operator()(unsigned long long i, unsigned long long j) const {
 		return data_[i][j];
